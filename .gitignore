@@ -1,0 +1,4 @@
+tmp/
+repositories/ubuntu/networking-bgpvpn-config_*_amd64.deb
+repositories/ubuntu/python-networking-bgpvpn_*_all.deb
+.build/
