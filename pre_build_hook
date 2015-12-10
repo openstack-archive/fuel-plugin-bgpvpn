@@ -25,6 +25,15 @@ function build_pkg {
       pushd "${DIR}/repositories/${1}/"
       fpm --force -s python -t deb -m 'mskalski@mirantis.com' --python-disable-dependency oslo.config ${TMP_DIR}/networking-bgpvpn/setup.py
       popd
+
+      # fpm -C is buggy https://github.com/jordansissel/fpm/issues/818
+      # so we have to change the roordir manually
+      pushd ${TMP_DIR}/networking-bgpvpn/
+      fpm --force -s dir -t deb -m 'nikolas.hermanns@ericsson.com' --config-files etc  -n networking-bgpvpn-config -v 1.0 etc
+      mv networking-bgpvpn-config_*_amd64.deb ${DIR}/repositories/${1}/
+      popd
+
+      cp -r ${TMP_DIR}/networking-bgpvpn/setup ${DIR}/deployment_scripts
       ;;
     *) echo "Not supported system"; exit 1;;
   esac
@@ -32,23 +41,30 @@ function build_pkg {
 
 command -v fpm >/dev/null 2>&1 || { echo >&2 "fpm ruby gem required but it's not installed.  Aborting."; exit 1; }
 
-cleanup
+if [[ "$DEBUG" != true ]];then
+    cleanup
+fi
+
 
 mkdir -p "${TMP_DIR}"
 
-pushd $TMP_DIR
 
-
-git clone $NETWORKING_BGPVPN_REPO networking-bgpvpn
-pushd networking-bgpvpn
-git checkout $NETWORKING_BGPVPN_BRANCH
-sed -i -- 's/sphinxcontrib-blockdiag/sphinxcontrib.blockdiag/' ./requirements.txt
-sed -i -- 's/sphinxcontrib-seqdiag/sphinxcontrib.seqdiag/' ./requirements.txt
-popd
+if [ ! -e ${TMP_DIR}/networking-bgpvpn ];then
+    pushd $TMP_DIR
+    git clone $NETWORKING_BGPVPN_REPO networking-bgpvpn
+    pushd networking-bgpvpn
+    git checkout $NETWORKING_BGPVPN_BRANCH
+    sed -i -- 's/sphinxcontrib-blockdiag/sphinxcontrib.blockdiag/' ./requirements.txt
+    sed -i -- 's/sphinxcontrib-seqdiag/sphinxcontrib.seqdiag/' ./requirements.txt
+    popd
+    popd
+fi
 
 for system in $BUILD_FOR
 do
   build_pkg $system
 done
 
-cleanup
+if [[ "$DEBUG" != true ]];then
+    cleanup
+fi
