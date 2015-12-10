@@ -1,0 +1,30 @@
+# Plugin name
+name: bgpvpn
+# Human-readable name for your plugin
+title: BGPVPN plugin
+# Plugin version
+version: '0.1.0'
+# Description
+description: 'This plugin provides BGPVPN extension for neutron.'
+# Required fuel version
+fuel_version: ['7.0']
+# Specify license of your plugin
+licenses: ['Apache License Version 2.0']
+# Specify author or company name
+authors: ['Michal Skalski, Mirantis']
+# A link to the plugin's page
+homepage: 'https://github.com/openstack/fuel-plugin-bgpvpn'
+# Specify a group which your plugin implements, possible options:
+# network, storage, storage::cinder, storage::glance, hypervisor
+groups: ['network']
+
+# The plugin is compatible with releases in the list
+releases:
+  - os: ubuntu
+    version: 2015.1.0-7.0
+    mode: ['ha', 'multinode']
+    deployment_scripts_path: deployment_scripts/
+    repository_path: repositories/ubuntu
+
+# Version of plugin package
+package_version: '3.0.0'

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Add here any the actions which are required before plugin build
+# like packages building, packages downloading from mirrors and so on.
+# The script should return 0 if there were no errors.
+set -eux
+
+# Networking bgpvpn
+NETWORKING_BGPVPN_REPO=${NETWORKING_BGPVPN_REPO:-https://github.com/openstack/networking-bgpvpn.git}
+NETWORKING_BGPVPN_BRANCH=${NETWORKING_BGPVPN_BRANCH:-backport/kilo}
+
+# For which systems odl package should be build
+BUILD_FOR=${BUILD_FOR:-ubuntu}
+
+DIR="$(dirname `readlink -f $0`)"
+TMP_DIR="${DIR}/tmp"
+
+function cleanup {
+  rm -rf "${TMP_DIR}"
+}
+
+function build_pkg {
+  case $1 in
+    ubuntu)
+      pushd "${DIR}/repositories/${1}/"
+      fpm --force -s python -t deb -m 'mskalski@mirantis.com' --python-disable-dependency oslo.config ${TMP_DIR}/networking-bgpvpn/setup.py
+      popd
+      ;;
+    *) echo "Not supported system"; exit 1;;
+  esac
+}
+
+command -v fpm >/dev/null 2>&1 || { echo >&2 "fpm ruby gem required but it's not installed.  Aborting."; exit 1; }
+
+cleanup
+
+mkdir -p "${TMP_DIR}"
+
+pushd $TMP_DIR
+
+
+git clone $NETWORKING_BGPVPN_REPO networking-bgpvpn
+pushd networking-bgpvpn
+git checkout $NETWORKING_BGPVPN_BRANCH
+sed -i -- 's/sphinxcontrib-blockdiag/sphinxcontrib.blockdiag/' ./requirements.txt
+sed -i -- 's/sphinxcontrib-seqdiag/sphinxcontrib.seqdiag/' ./requirements.txt
+popd
+
+for system in $BUILD_FOR
+do
+  build_pkg $system
+done
+
+cleanup
