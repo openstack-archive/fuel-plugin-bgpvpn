@@ -27,7 +27,7 @@ Limitations
 Installation Guide
 ==================
 
-OpenDaylight plugin installation
+BGPVPN plugin installation
 ----------------------------------------
 
 1. Clone the fuel-plugin-bgpvpn repo from github:
@@ -52,7 +52,7 @@ OpenDaylight plugin installation
 
         scp bgpnvpn-[x.x.x].rpm root@<the_Fuel_Master_node_IP address>:/tmp
 
-7. While logged in Fuel Master install the OpenDaylight plugin:
+7. While logged in Fuel Master install the BGPVPN plugin:
 
         fuel plugins --install bgpvpn-[x.x.x].rpm
 
