@@ -1,0 +1,9 @@
+- id: bgpvpn_configure
+  role: ['primary-controller', 'controller']
+  requires: [post_deployment_start]
+  required_for: [post_deployment_end]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/install-bgpvpn.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1400
