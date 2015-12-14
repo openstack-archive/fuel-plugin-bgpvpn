@@ -9,6 +9,10 @@ set -eux
 NETWORKING_BGPVPN_REPO=${NETWORKING_BGPVPN_REPO:-https://github.com/openstack/networking-bgpvpn.git}
 NETWORKING_BGPVPN_BRANCH=${NETWORKING_BGPVPN_BRANCH:-backport/kilo}
 
+#Networking odl
+NETWORKING_ODL_REPO=${NETWORKING_ODL_REPO:-https://github.com/openstack/networking-odl.git}
+NETWORKING_ODL_BRANCH=${NETWORKING_ODL_BRANCH:-stable/kilo}
+
 # For which systems odl package should be build
 BUILD_FOR=${BUILD_FOR:-ubuntu}
 
@@ -31,8 +35,13 @@ function build_pkg {
       pushd ${TMP_DIR}/networking-bgpvpn/
       fpm --force -s dir -t deb -m 'nikolas.hermanns@ericsson.com' --config-files etc  -n networking-bgpvpn-config -v 1.0 etc
       mv networking-bgpvpn-config_*_amd64.deb ${DIR}/repositories/${1}/
-      popd
 
+      # Networking odl is needed cause it is a dependencie. There is no way yet to make
+      # the bgpvpn installation waiting for the ODL installation, when ODL installation
+      # is optional: http://permalink.gmane.org/gmane.comp.cloud.openstack.devel/63333
+      fpm --force -s python -t deb -m 'nikolas.hermanns@ericsson.com' --no-python-dependencies -d python-pbr -d python-babel -d python-neutron ${TMP_DIR}/networking_odl/setup.py
+
+      popd
       ;;
     *) echo "Not supported system"; exit 1;;
   esac
@@ -53,6 +62,11 @@ git checkout $NETWORKING_BGPVPN_BRANCH
 sed -i -- 's/sphinxcontrib-blockdiag//' ./requirements.txt
 sed -i -- 's/sphinxcontrib-seqdiag//' ./requirements.txt
 popd
+git clone $NETWORKING_ODL_REPO networking_odl
+pushd networking_odl
+git checkout $NETWORKING_ODL_BRANCH
+popd
+
 popd
 
 for system in $BUILD_FOR
