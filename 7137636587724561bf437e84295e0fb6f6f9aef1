@@ -1,0 +1,8 @@
+Verified+2: Jenkins
+Code-Review+2: Nikolas Hermanns <nikolas.hermanns@ericsson.com>
+Workflow+1: Nikolas Hermanns <nikolas.hermanns@ericsson.com>
+Submitted-by: Jenkins
+Submitted-at: Tue, 15 Dec 2015 08:04:31 +0000
+Reviewed-on: https://review.openstack.org/257498
+Project: openstack/fuel-plugin-bgpvpn
+Branch: refs/heads/master
