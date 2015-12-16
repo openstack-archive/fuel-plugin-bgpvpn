@@ -13,6 +13,14 @@ NETWORKING_BGPVPN_BRANCH=${NETWORKING_BGPVPN_BRANCH:-backport/kilo}
 NETWORKING_ODL_REPO=${NETWORKING_ODL_REPO:-https://github.com/openstack/networking-odl.git}
 NETWORKING_ODL_BRANCH=${NETWORKING_ODL_BRANCH:-stable/kilo}
 
+#Networking bagpipe
+NETWORKING_BAGPIPE_REPO=${NETWORKING_BAGPIPE_REPO:-https://github.com/openstack/networking-bagpipe.git}
+NETWORKING_BAGPIPE_BRANCH=${NETWORKING_BAGPIPE_BRANCH:-stable/kilo}
+
+#bagpipe-bgp
+BAGPIPE_BGP_REPO=${BAGPIPE_BGP_REPO:-https://github.com/Orange-OpenSource/bagpipe-bgp.git}
+BAGPIPE_BGP_BRANCH=${BAGPIPE_BGP_BRANCH:-master}
+
 # For which systems odl package should be build
 BUILD_FOR=${BUILD_FOR:-ubuntu}
 
@@ -56,12 +64,12 @@ mkdir -p "${TMP_DIR}"
 
 
 pushd $TMP_DIR
+
 git clone $NETWORKING_BGPVPN_REPO networking-bgpvpn
 pushd networking-bgpvpn
 git checkout $NETWORKING_BGPVPN_BRANCH
-sed -i -- 's/sphinxcontrib-blockdiag//' ./requirements.txt
-sed -i -- 's/sphinxcontrib-seqdiag//' ./requirements.txt
 popd
+
 git clone $NETWORKING_ODL_REPO networking_odl
 pushd networking_odl
 git checkout $NETWORKING_ODL_BRANCH
