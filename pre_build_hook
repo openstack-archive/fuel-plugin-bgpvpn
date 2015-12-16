@@ -56,12 +56,12 @@ mkdir -p "${TMP_DIR}"
 
 
 pushd $TMP_DIR
+
 git clone $NETWORKING_BGPVPN_REPO networking-bgpvpn
 pushd networking-bgpvpn
 git checkout $NETWORKING_BGPVPN_BRANCH
-sed -i -- 's/sphinxcontrib-blockdiag//' ./requirements.txt
-sed -i -- 's/sphinxcontrib-seqdiag//' ./requirements.txt
 popd
+
 git clone $NETWORKING_ODL_REPO networking_odl
 pushd networking_odl
 git checkout $NETWORKING_ODL_BRANCH
