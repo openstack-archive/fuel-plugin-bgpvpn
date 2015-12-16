@@ -13,35 +13,88 @@ NETWORKING_BGPVPN_BRANCH=${NETWORKING_BGPVPN_BRANCH:-backport/kilo}
 NETWORKING_ODL_REPO=${NETWORKING_ODL_REPO:-https://github.com/openstack/networking-odl.git}
 NETWORKING_ODL_BRANCH=${NETWORKING_ODL_BRANCH:-stable/kilo}
 
+
+# Bagpip
+BAGPIPE_BGP=${BAGPIPE_BGP:-https://github.com/Orange-OpenSource/bagpipe-bgp.git}
+BAGPIPE_BGP_BRANCH=${BAGPIPE_BGP_BRANCH:-master}
+# Networking bagpipe
+NETWORKING_BAGPIPE_REPO=${NETWORKING_BAGPIPE_REPO:-https://github.com/openstack/networking-bagpipe.git}
+NETWORKING_BAGPIPE_BRANCH=${NETWORKING_BAGPIPE_BRANCH:-stable/kilo}
+
 # For which systems odl package should be build
 BUILD_FOR=${BUILD_FOR:-ubuntu}
 
 DIR="$(dirname `readlink -f $0`)"
 TMP_DIR="${DIR}/tmp"
 
+DEBUG=${DEBUG:-false}
 function cleanup {
-  rm -rf "${TMP_DIR}"
+    rm -rf "${TMP_DIR}"
 }
 
+function git_clone {
+    checkout_name=$1
+    repo=$2
+    branch=$3
+    pushd $TMP_DIR
+    if [ ! -e checkout_name ];then
+        git clone $repo $checkout_name -b $branch
+    else
+        echo "Using already checked out version of $repo"
+    fi
+}
+
+build_config {
+    config_path=$1
+    name=$2
+    # fpm -C is buggy https://github.com/jordansissel/fpm/issues/818
+    # so we have to change the rootdir manually
+    pushd $config_path
+    fpm --force -s dir -t deb -m 'nikolas.hermanns@ericsson.com' --config-files etc  -n $name-config etc
+    mv $name-config_*_amd64.deb $1
+    popd
+}
+function build_bagpip {
+    pushd $1
+    echo "Building bagpipe and networking-bagpipe."
+    git_clone $BAGPIPE_BGP bagpipe-bgp $BAGPIPE_BGP_BRANCH
+    git_clone $NETWORKING_BAGPIPE_REPO networking-bagpipe NETWORKING_BAGPIPE_BRANCH
+    fpm --force -s python -t deb -m 'nikolas.hermanns@ericsson.com' ${TMP_DIR}/bagpipe-bgp/setup.py
+    fpm --force -s python -t deb -m 'nikolas.hermanns@ericsson.com' ${TMP_DIR}/networking-bagpipe/setup.py
+    build_config ${TMP_DIR}/bagpipe-bgp/ bagpipe-bgp
+    build_config ${TMP_DIR}/networking-bagpipe/ networking-bagpipe
+    popd
+}
+
+function build_networking_odl {
+    pushd $1
+    echo "Building networking-odl"
+    git_clone $NETWORKING_ODL_REPO networking_odl $NETWORKING_ODL_BRANCH
+    # Networking odl is needed cause it is a dependencie. There is no way yet to make
+    # the bgpvpn installation waiting for the ODL installation, when ODL installation
+    # is optional: http://permalink.gmane.org/gmane.comp.cloud.openstack.devel/63333
+    fpm --force -s python -t deb -m 'nikolas.hermanns@ericsson.com' --no-python-dependencies -d python-pbr -d python-babel -d python-neutron ${TMP_DIR}/networking_odl/setup.py
+    popd
+}
+function build_networking_bgpvpn {
+    pushd $1
+    echo "Building networking-bgpvpn"
+    git_clone $NETWORKING_BGPVPN_REPO networking-bgpvpn $NETWORKING_BGPVPN_BRANCH
+    pushd $TMP_DIR/networking-bgpvpn
+    sed -i -- 's/sphinxcontrib-blockdiag//' ./requirements.txt
+    sed -i -- 's/sphinxcontrib-seqdiag//' ./requirements.txt
+    popd
+
+    fpm --force -s python -t deb -m 'mskalski@mirantis.com' --python-disable-dependency oslo.config ${TMP_DIR}/networking-bgpvpn/setup.py
+    popd
+    build_config ${TMP_DIR}/networking-bgpvpn/ networking-bgpvpn
+}
 function build_pkg {
   case $1 in
     ubuntu)
-      pushd "${DIR}/repositories/${1}/"
-      fpm --force -s python -t deb -m 'mskalski@mirantis.com' --python-disable-dependency oslo.config ${TMP_DIR}/networking-bgpvpn/setup.py
-      popd
-
-      # fpm -C is buggy https://github.com/jordansissel/fpm/issues/818
-      # so we have to change the rootdir manually
-      pushd ${TMP_DIR}/networking-bgpvpn/
-      fpm --force -s dir -t deb -m 'nikolas.hermanns@ericsson.com' --config-files etc  -n networking-bgpvpn-config -v 1.0 etc
-      mv networking-bgpvpn-config_*_amd64.deb ${DIR}/repositories/${1}/
-
-      # Networking odl is needed cause it is a dependencie. There is no way yet to make
-      # the bgpvpn installation waiting for the ODL installation, when ODL installation
-      # is optional: http://permalink.gmane.org/gmane.comp.cloud.openstack.devel/63333
-      fpm --force -s python -t deb -m 'nikolas.hermanns@ericsson.com' --no-python-dependencies -d python-pbr -d python-babel -d python-neutron ${TMP_DIR}/networking_odl/setup.py
-
-      popd
+        build_networking_bgpvpn "${DIR}/repositories/${1}/"
+        build_networking_odl "${DIR}/repositories/${1}/"
+        build_bagpip "${DIR}/repositories/${1}/"
       ;;
     *) echo "Not supported system"; exit 1;;
   esac
@@ -49,29 +102,17 @@ function build_pkg {
 
 command -v fpm >/dev/null 2>&1 || { echo >&2 "fpm ruby gem required but it's not installed.  Aborting."; exit 1; }
 
-cleanup
-
+if [[ $DEBUG != true ]];then
+    cleanup
+fi
 
 mkdir -p "${TMP_DIR}"
-
-
-pushd $TMP_DIR
-git clone $NETWORKING_BGPVPN_REPO networking-bgpvpn
-pushd networking-bgpvpn
-git checkout $NETWORKING_BGPVPN_BRANCH
-sed -i -- 's/sphinxcontrib-blockdiag//' ./requirements.txt
-sed -i -- 's/sphinxcontrib-seqdiag//' ./requirements.txt
-popd
-git clone $NETWORKING_ODL_REPO networking_odl
-pushd networking_odl
-git checkout $NETWORKING_ODL_BRANCH
-popd
-
-popd
 
 for system in $BUILD_FOR
 do
   build_pkg $system
 done
 
-#cleanup
+if [[ $DEBUG != true ]];then
+    cleanup
+fi
