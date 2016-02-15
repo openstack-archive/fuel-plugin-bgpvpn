@@ -23,6 +23,14 @@ function cleanup {
   rm -rf "${TMP_DIR}"
 }
 
+function patch_bgpvpn {
+  # test if patch is needed
+  git fetch ssh://enikher@review.openstack.org:29418/openstack/networking-bgpvpn refs/changes/52/274552/2 && git format-patch -1 --stdout FETCH_HEAD > ./odl-client-patch
+  patch -p1 -N --dry-run < ./odl-client-patch && patch -p1 -N < ./odl-client-patch || true
+
+  sed -i -- 's/sphinxcontrib-blockdiag//' ./requirements.txt
+  sed -i -- 's/sphinxcontrib-seqdiag//' ./requirements.txt
+}
 function build_pkg {
   case $1 in
     ubuntu)
@@ -59,8 +67,7 @@ pushd $TMP_DIR
 git clone $NETWORKING_BGPVPN_REPO networking-bgpvpn
 pushd networking-bgpvpn
 git checkout $NETWORKING_BGPVPN_BRANCH
-sed -i -- 's/sphinxcontrib-blockdiag//' ./requirements.txt
-sed -i -- 's/sphinxcontrib-seqdiag//' ./requirements.txt
+patch_bgpvpn
 popd
 git clone $NETWORKING_ODL_REPO networking_odl
 pushd networking_odl
