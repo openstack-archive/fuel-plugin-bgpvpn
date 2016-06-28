@@ -1,4 +1,5 @@
 - id: bgpvpn_configure
+  version: 2.0.0
   role: ['primary-controller', 'controller']
   requires: [post_deployment_start]
   required_for: [post_deployment_end]
