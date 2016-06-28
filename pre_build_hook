@@ -7,11 +7,11 @@ set -eux
 
 # Networking bgpvpn
 NETWORKING_BGPVPN_REPO=${NETWORKING_BGPVPN_REPO:-https://github.com/openstack/networking-bgpvpn.git}
-NETWORKING_BGPVPN_BRANCH=${NETWORKING_BGPVPN_BRANCH:-stable/liberty}
+NETWORKING_BGPVPN_BRANCH=${NETWORKING_BGPVPN_BRANCH:-stable/mitaka}
 
 #Networking odl
 NETWORKING_ODL_REPO=${NETWORKING_ODL_REPO:-https://github.com/openstack/networking-odl.git}
-NETWORKING_ODL_BRANCH=${NETWORKING_ODL_BRANCH:-stable/liberty}
+NETWORKING_ODL_BRANCH=${NETWORKING_ODL_BRANCH:-stable/mitaka}
 
 # For which systems odl package should be build
 BUILD_FOR=${BUILD_FOR:-ubuntu}
@@ -59,8 +59,6 @@ pushd $TMP_DIR
 git clone $NETWORKING_BGPVPN_REPO networking-bgpvpn
 pushd networking-bgpvpn
 git checkout $NETWORKING_BGPVPN_BRANCH
-sed -i -- 's/sphinxcontrib-blockdiag//' ./requirements.txt
-sed -i -- 's/sphinxcontrib-seqdiag//' ./requirements.txt
 popd
 git clone $NETWORKING_ODL_REPO networking_odl
 pushd networking_odl
