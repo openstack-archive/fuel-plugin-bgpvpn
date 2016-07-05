@@ -27,19 +27,22 @@ function build_pkg {
   case $1 in
     ubuntu)
       pushd "${DIR}/repositories/${1}/"
-      fpm --force -s python -t deb -m 'mskalski@mirantis.com' --python-disable-dependency oslo.config ${TMP_DIR}/networking-bgpvpn/setup.py
+      fpm --architecture all --force -s python -t deb -m 'mskalski@mirantis.com' \
+        --python-disable-dependency oslo.config ${TMP_DIR}/networking-bgpvpn/setup.py
 
       # fpm -C is buggy https://github.com/jordansissel/fpm/issues/818
       # so we have to change the rootdir manually
       pushd ${TMP_DIR}/networking-bgpvpn/
-      fpm --force -s dir -t deb -m 'nikolas.hermanns@ericsson.com' --config-files etc  -n networking-bgpvpn-config -v 1.0 etc
-      mv networking-bgpvpn-config_*_amd64.deb ${DIR}/repositories/${1}/
+      fpm --architecture all --force -s dir -t deb -m 'nikolas.hermanns@ericsson.com' \
+        --config-files etc  -n networking-bgpvpn-config -v 1.0 etc
+      mv networking-bgpvpn-config_*.deb ${DIR}/repositories/${1}/
       popd
 
       # Networking odl is needed cause it is a dependencie. There is no way yet to make
       # the bgpvpn installation waiting for the ODL installation, when ODL installation
       # is optional: http://permalink.gmane.org/gmane.comp.cloud.openstack.devel/63333
-      fpm --force -s python -t deb -m 'nikolas.hermanns@ericsson.com' --no-python-dependencies -d python-pbr -d python-babel -d python-neutron ${TMP_DIR}/networking_odl/setup.py
+      fpm --architecture all --force -s python -t deb -m 'nikolas.hermanns@ericsson.com' \
+        --no-python-dependencies -d python-pbr -d python-babel -d python-neutron ${TMP_DIR}/networking_odl/setup.py
 
       popd
       ;;
