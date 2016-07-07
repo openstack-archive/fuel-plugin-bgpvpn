@@ -19,11 +19,16 @@ BUILD_FOR=${BUILD_FOR:-ubuntu}
 DIR="$(dirname `readlink -f $0`)"
 TMP_DIR="${DIR}/tmp"
 
+#Remove temporary files
+CLEANUP=${CLEANUP:-true}
+
 function cleanup {
   rm -rf "${TMP_DIR}"
 }
 
 function build_pkg {
+  # clean up old packages
+  rm -rf ${DIR}/repositories/${1}/*
   case $1 in
     ubuntu)
       pushd "${DIR}/repositories/${1}/"
@@ -77,4 +82,6 @@ do
   build_pkg $system
 done
 
-#cleanup
+if [ "$CLEANUP" != false ];then
+  cleanup
+fi
