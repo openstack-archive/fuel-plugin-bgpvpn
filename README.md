@@ -7,7 +7,7 @@ BGPVPN plugin
 Overview
 --------
 
-BGPVPN fuel plugin.
+This is the Fuel plugin for the networking-bgpvpn project.
 
 Requirements
 ------------
