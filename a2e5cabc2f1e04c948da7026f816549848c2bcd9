@@ -1,0 +1,9 @@
+Code-Review+1: Alexandru Avadanii <alexandru.avadanii@enea.com>
+Code-Review+2: Nikolas Hermanns <nikolas.hermanns@ericsson.com>
+Workflow+1: Michal Skalski <mskalski@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Fri, 08 Jul 2016 08:31:54 +0000
+Reviewed-on: https://review.openstack.org/338740
+Project: openstack/fuel-plugin-bgpvpn
+Branch: refs/heads/master
