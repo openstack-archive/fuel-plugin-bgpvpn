@@ -7,14 +7,14 @@ BGPVPN plugin
 Overview
 --------
 
-BGPVPN fuel plugin.
+This is the Fuel plugin for the networking-bgpvpn project.
 
 Requirements
 ------------
 
 | Requirement                      | Version/Comment |
 |----------------------------------|-----------------|
-| Mirantis OpenStack compatibility | 7.0             |
+| Mirantis OpenStack compatibility | 8.0             |
 
 Recommendations
 ---------------
@@ -72,4 +72,9 @@ User Guide
 
 Contributors
 ------------
+
+nikolas.hermanns@ericsson.com
+mskalski@mirantis.com
+tim.irnich@ericsson.com
+
 
