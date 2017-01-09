@@ -14,7 +14,7 @@ Requirements
 
 | Requirement                      | Version/Comment |
 |----------------------------------|-----------------|
-| Mirantis OpenStack compatibility | 8.0             |
+| Mirantis OpenStack compatibility | 10.0            |
 
 Recommendations
 ---------------
@@ -76,5 +76,4 @@ Contributors
 nikolas.hermanns@ericsson.com
 mskalski@mirantis.com
 tim.irnich@ericsson.com
-
-
+rski@intracom-telecom.com

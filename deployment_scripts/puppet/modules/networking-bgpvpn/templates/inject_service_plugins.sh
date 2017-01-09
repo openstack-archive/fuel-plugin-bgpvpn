@@ -14,9 +14,7 @@ if [ -e conf_file ]; then
     exit 1
 fi
 if ! grep -q "$service_plugin" $conf_file ; then
-    service_plugins_v1=$(grep "^service_plugins" $conf_file | awk {'print $3'})
-    service_plugins_v2=$(grep "^service_plugins" $conf_file | awk {'print $2'})
-    service_plugins=${service_plugins_v1:-$service_plugins_v2}
+    service_plugins=$(grep "^service_plugins" $conf_file)
     sed -i "s/$service_plugins/$service_plugins,$service_plugin/" $conf_file
 fi
 

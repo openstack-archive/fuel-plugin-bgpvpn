@@ -8,13 +8,11 @@ set -eux
 # Networking bgpvpn
 NETWORKING_BGPVPN_REPO=${NETWORKING_BGPVPN_REPO:-https://github.com/openstack/networking-bgpvpn.git}
 
-# This commit https://github.com/openstack/networking-bgpvpn/commit/98d038079ee9004ac1032741c5b61e057e9118fc
-# breaks builds of deb package using fpm, point to one behind
-NETWORKING_BGPVPN_BRANCH=${NETWORKING_BGPVPN_BRANCH:-4b92d0cbe43097e1e86f2b7716f958c16a4e00e3}
+NETWORKING_BGPVPN_BRANCH=${NETWORKING_BGPVPN_BRANCH:-stable/newton}
 
 #Networking odl
 NETWORKING_ODL_REPO=${NETWORKING_ODL_REPO:-https://github.com/openstack/networking-odl.git}
-NETWORKING_ODL_BRANCH=${NETWORKING_ODL_BRANCH:-stable/mitaka}
+NETWORKING_ODL_BRANCH=${NETWORKING_ODL_BRANCH:-stable/newton}
 
 # For which systems odl package should be build
 BUILD_FOR=${BUILD_FOR:-ubuntu}
