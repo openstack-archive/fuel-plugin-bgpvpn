@@ -3,7 +3,7 @@ name: bgpvpn
 # Human-readable name for your plugin
 title: BGPVPN plugin
 # Plugin version
-version: '1.0.0'
+version: '0.5.0'
 # Description
 description: 'This plugin provides BGPVPN extension for neutron.'
 # Required fuel version
