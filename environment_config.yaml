@@ -2,5 +2,8 @@ attributes:
   metadata:
     restrictions:
       - "cluster:net_provider != 'neutron'": "Only neutron is supported by BGPVPN-plugin"
+      - condition: "settings:opendaylight == null or settings:opendaylight.metadata.enabled != true"
+        strict: false
+        message: "OpenDaylight plugin must be installed and enabled"
     label: "BGPVPN plugin"
     weight: 90
