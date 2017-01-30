@@ -1,0 +1,9 @@
+Code-Review+1: Romanos Skiadas <rom.skiad@gmail.com>
+Code-Review+2: Niko Hermanns <nikolas.hermanns@ericsson.com>
+Workflow+1: Niko Hermanns <nikolas.hermanns@ericsson.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 30 Jan 2017 16:05:36 +0000
+Reviewed-on: https://review.openstack.org/425189
+Project: openstack/fuel-plugin-bgpvpn
+Branch: refs/heads/master
