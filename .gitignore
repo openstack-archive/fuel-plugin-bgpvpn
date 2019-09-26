@@ -1,7 +1,0 @@
-tmp/
-*.rpm
-*.deb
-.build/
-.cache/
-.project
-.pydevproject
